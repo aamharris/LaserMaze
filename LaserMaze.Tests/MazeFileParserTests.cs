@@ -35,25 +35,57 @@ namespace LaserMaze.Tests
             Assert.Equal("Maze config file must be a text file", exception.Message);
         }
 
-        private string _validTestFileContents => "1,2\r\n-1\r\n1,2R";
+        private string _validTwoWayMirrorFileContents => "1,2\r\n-1\r\n1,2R";
 
         [Fact]
         public void GetLaserMazeConfiguration_GetsGridSize_WithValidConfig()
         {
-            var configuration = MazeFileParser.GetLaserMazeConfiguration(_validTestFileContents);
+            var configuration = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2R" }));
             Assert.Equal(1, configuration.GridSize.X);
             Assert.Equal(2, configuration.GridSize.Y);
         }
 
         [Fact]
-        public void MazeFileParser_GetsMirrors_WithValidConfig()
+        public void GetLaserMazeConfiguration_GetsRightMirror_WithValidConfig()
         {
-            var configuration = MazeFileParser.GetLaserMazeConfiguration(_validTestFileContents);
+            var configuration = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2R" }));
             Assert.Single(configuration.Mirrors);
             var mirror = configuration.Mirrors.First();
             Assert.Equal(new GridCoordinates(1, 2), mirror.Coordinates);
             Assert.Equal(MirrorType.TwoWay, mirror.MirrorType);
             Assert.Equal(MirrorOrientation.Right, mirror.MirrorOrientation);
+        }
+
+        [Fact]
+        public void GetLaserMazeConfiguration_GetsLeftMirror_WithValidConfig()
+        {
+            var configuration = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2L" }));
+            Assert.Single(configuration.Mirrors);
+            var mirror = configuration.Mirrors.First();
+            Assert.Equal(new GridCoordinates(1, 2), mirror.Coordinates);
+            Assert.Equal(MirrorType.TwoWay, mirror.MirrorType);
+            Assert.Equal(MirrorOrientation.Left, mirror.MirrorOrientation);
+        }
+
+        [Fact]
+        public void GetLaserMazeConfiguration_GetsMirrors_WhenMultipleProvided()
+        {
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2R", "0,0L" }));
+            Assert.Equal(2, config.Mirrors.Count);
+            var mirror1 = config.Mirrors.ElementAt(0);
+            Assert.Equal(new GridCoordinates(1, 2), mirror1.Coordinates);
+            Assert.Equal(MirrorOrientation.Right, mirror1.MirrorOrientation);
+
+            var mirror2 = config.Mirrors.ElementAt(1);
+            Assert.Equal(new GridCoordinates(0, 0), mirror2.Coordinates);
+            Assert.Equal(MirrorOrientation.Left, mirror2.MirrorOrientation);
+        }
+
+
+
+        private string buildMazeConfigFileContents(string coordinates, string[] mirrors)
+        {
+            return $"{coordinates}\r\n-1\r\n{string.Join("\r\n\"", mirrors)}";
         }
     }
 }

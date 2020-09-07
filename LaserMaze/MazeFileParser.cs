@@ -44,14 +44,20 @@ namespace LaserMaze
 
         private static List<Mirror> GetMirrors(string mirrorText)
         {
-            var mirrors = mirrorText.Split("\r\n");
-            
-            var mirrorProps = Regex.Match(mirrors[0], @"(\d+,\d+)(R|L)").Groups;
-            var mirror = new Mirror();
-            mirror.Coordinates = new GridCoordinates(mirrorProps[1].Value);
-            mirror.MirrorType = MirrorType.TwoWay;
-            mirror.MirrorOrientation = mirrorProps[2].Value == "R" ? MirrorOrientation.Right : MirrorOrientation.Left;
-            return new List<Mirror> { mirror };
+            var mirrors = new List<Mirror>();
+
+            var mirrorsText = mirrorText.Split("\r\n");
+            foreach (var item in mirrorsText)
+            {
+                var mirrorProps = Regex.Match(item, @"(\d+,\d+)(R|L)").Groups;
+                var mirror = new Mirror();
+                mirror.Coordinates = new GridCoordinates(mirrorProps[1].Value);
+                mirror.MirrorType = MirrorType.TwoWay;
+                mirror.MirrorOrientation = mirrorProps[2].Value == "R" ? MirrorOrientation.Right : MirrorOrientation.Left;
+                mirrors.Add(mirror);
+            }
+
+            return mirrors;          
         }
 
         private static GridCoordinates GetGridSize(string coordText)
