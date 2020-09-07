@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LaserMaze
 {
-    public class LaserStartingPoint
+    public class LaserPoint
     {
         public GridCoordinates Coordinates { get; set; }
         public LaserDirection Direction { get; set; }

@@ -61,9 +61,9 @@ namespace LaserMaze
             return mirrors;          
         }
 
-        private static LaserStartingPoint GetLaserStartingPoint(string laserConfigText)
+        private static LaserPoint GetLaserStartingPoint(string laserConfigText)
         {
-            var laserStartPoint = new LaserStartingPoint();
+            var laserStartPoint = new LaserPoint();
             var laserProps = Regex.Match(laserConfigText, @"(?<coords>\d+,\d+)(?<direction>V|H)").Groups;
             laserStartPoint.Coordinates = new GridCoordinates(laserProps["coords"].Value);
             laserStartPoint.Direction = GetLaserDirection(laserProps["direction"].Value, laserStartPoint.Coordinates);

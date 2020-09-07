@@ -7,6 +7,6 @@ namespace LaserMaze
     {
         public GridCoordinates GridSize { get; set; }
         public List<Mirror> Mirrors { get; set; }
-        public LaserStartingPoint LaserStartingPoint { get; set; }
+        public LaserPoint LaserStartingPoint { get; set; }
     }
 }
