@@ -1,3 +1,4 @@
+using LaserMaze.Enums;
 using System;
 using System.Linq;
 using Xunit;
