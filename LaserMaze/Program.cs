@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace LaserMaze
 {
@@ -11,9 +13,9 @@ namespace LaserMaze
         }
     }
 
-    public class MazeFileParser
+    public static class MazeFileParser
     {
-        public string GetFileContentsFromPath(string filePath)
+        public static string GetFileContentsFromPath(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -35,41 +37,91 @@ namespace LaserMaze
             }
         }
 
-        public LaserMazeConfiguration GetLaserMazeConfiguration(string fileContents)
+        public static LaserMazeConfiguration GetLaserMazeConfiguration(string fileContents)
         {
-            var settings = fileContents.Split("\r\n-1");
+            var settings = fileContents.Split("\r\n-1\r\n");
             var config = new LaserMazeConfiguration();
 
             config.GridSize = GetGridSize(settings[0]);
+            config.Mirrors = GetMirrors(settings[1]);
             
             return config;
         }
 
-        public GridCoordinates GetGridSize(string grid)
+        private static List<Mirror> GetMirrors(string mirrorText)
         {
-            var coords = grid.Split(",");
-            var x = int.Parse(coords[0]);
-            var y = int.Parse(coords[1]);
-            return new GridCoordinates(x, y);
+            var mirrors = mirrorText.Split("\r\n");
+            
+            var mirrorProps = Regex.Match(mirrors[0], @"(\d+,\d+)(R|L)").Groups;
+            var mirror = new Mirror();
+            mirror.Coordinates = new GridCoordinates(mirrorProps[1].Value);
+            mirror.MirrorType = MirrorType.TwoWay;
+            mirror.MirrorOrientation = mirrorProps[2].Value == "R" ? MirrorOrientation.Right : MirrorOrientation.Left;
+            return new List<Mirror> { mirror };
+        }
+
+        private static GridCoordinates GetGridSize(string coordText)
+        {
+            return new GridCoordinates(coordText);
         }
     }
 
     public class LaserMazeConfiguration
     {
-        public GridCoordinates GridSize { get; set; } = new GridCoordinates();
+        public GridCoordinates GridSize { get; set; }
+        public List<Mirror> Mirrors { get; set; }
+    }
+
+    public enum MirrorType
+    {
+        TwoWay,
+        OneWayReflectOnRight,
+        OneWayReflectOnLeft
+    }
+
+    public enum MirrorOrientation
+    {
+        Left,
+        Right
+    }
+
+    public class Mirror
+    {
+        public GridCoordinates Coordinates { get; set; }
+        public MirrorType MirrorType { get; set; }
+        public MirrorOrientation MirrorOrientation { get; set; }
     }
 
     public class GridCoordinates
     {
-        public GridCoordinates() {}
-        
-        public GridCoordinates(int x, int y)
-        {
+        public GridCoordinates(int x, int y) {
             X = x;
             Y = y;
+        }
+        
+        public GridCoordinates(string coordText)
+        {
+            string[] xy = coordText.Split(",");
+            X = int.Parse(xy[0]);
+            Y = int.Parse(xy[1]);
         }
 
         public int X { get; set; }
         public int Y { get; set; }
+
+
+        public override bool Equals(Object obj)
+        {
+            //Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                GridCoordinates coords = (GridCoordinates)obj;
+                return (X == coords.X) && (Y == coords.Y);
+            }
+        }
     }
 }
