@@ -35,8 +35,6 @@ namespace LaserMaze.Tests
             Assert.Equal("Maze config file must be a text file", exception.Message);
         }
 
-        private string _validTwoWayMirrorFileContents => "1,2\r\n-1\r\n1,2R";
-
         [Fact]
         public void GetLaserMazeConfiguration_GetsGridSize_WithValidConfig()
         {
@@ -103,9 +101,41 @@ namespace LaserMaze.Tests
             Assert.Equal(MirrorOrientation.Right, mirror.MirrorOrientation);
         }
 
-        private string buildMazeConfigFileContents(string coordinates, string[] mirrors)
+        [Fact]
+        public void GetLaserMazeConfiguration_SetsLaserRight_WhenStartingConfigurationIsOnLeftSide()
         {
-            return $"{coordinates}\r\n-1\r\n{string.Join("\r\n\"", mirrors)}";
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2RL" }, "0,0H"));
+            Assert.Equal(LaserDirection.Right, config.LaserStartingPoint.Direction);
+            Assert.Equal(new GridCoordinates(0,0), config.LaserStartingPoint.Coordinates);
+        }
+
+        [Fact]
+        public void GetLaserMazeConfiguration_SetsLaserLeft_WhenStartingConfigurationIsOnRightSide()
+        {
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2RL" }, "1,2H"));
+            Assert.Equal(LaserDirection.Left, config.LaserStartingPoint.Direction);
+            Assert.Equal(new GridCoordinates(1, 2), config.LaserStartingPoint.Coordinates);
+        }
+
+        [Fact]
+        public void GetLaserMazeConfiguration_SetsLaserUp_WhenStartingConfigurationIsOnBottom()
+        {
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2RL" }, "0,0V"));
+            Assert.Equal(LaserDirection.Up, config.LaserStartingPoint.Direction);
+            Assert.Equal(new GridCoordinates(0, 0), config.LaserStartingPoint.Coordinates);
+        }
+
+        [Fact]
+        public void GetLaserMazeConfiguration_SetsLaserDown_WhenStartingConfigurationIsOnTop()
+        {
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2RL" }, "1,2V"));
+            Assert.Equal(LaserDirection.Down, config.LaserStartingPoint.Direction);
+            Assert.Equal(new GridCoordinates(1, 2), config.LaserStartingPoint.Coordinates);
+        }
+
+        private string buildMazeConfigFileContents(string coordinates, string[] mirrors, string startingConfiguration = "0,0H")
+        {
+            return $"{coordinates}\r\n-1\r\n{string.Join("\r\n\"", mirrors)}\r\n-1\r\n{startingConfiguration}";
         }
     }
 }

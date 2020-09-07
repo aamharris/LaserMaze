@@ -38,6 +38,7 @@ namespace LaserMaze
 
             config.GridSize = GetGridSize(settings[0]);
             config.Mirrors = GetMirrors(settings[1]);
+            config.LaserStartingPoint = GetLaserStartingPoint(settings[2]);
             
             return config;
         }
@@ -58,6 +59,25 @@ namespace LaserMaze
             }
 
             return mirrors;          
+        }
+
+        private static LaserStartingPoint GetLaserStartingPoint(string laserConfigText)
+        {
+            var laserStartPoint = new LaserStartingPoint();
+            var laserProps = Regex.Match(laserConfigText, @"(?<coords>\d+,\d+)(?<direction>V|H)").Groups;
+            laserStartPoint.Coordinates = new GridCoordinates(laserProps["coords"].Value);
+            laserStartPoint.Direction = GetLaserDirection(laserProps["direction"].Value, laserStartPoint.Coordinates);
+            return laserStartPoint;
+        }
+
+        private static LaserDirection GetLaserDirection(string orientation, GridCoordinates coords)
+        {
+            if (orientation == "H")
+            {
+                return coords.Y == 0 ? LaserDirection.Right : LaserDirection.Left;
+            }
+            else
+                return coords.X == 0 ? LaserDirection.Up : LaserDirection.Down;
         }
 
         private static MirrorType GetMirrorType(GroupCollection mirrorProps)

@@ -1,6 +1,5 @@
-﻿using System;
+﻿using LaserMaze.Enums;
 using System.Collections.Generic;
-using System.Text;
 
 namespace LaserMaze
 {
@@ -8,5 +7,6 @@ namespace LaserMaze
     {
         public GridCoordinates GridSize { get; set; }
         public List<Mirror> Mirrors { get; set; }
+        public LaserStartingPoint LaserStartingPoint { get; set; }
     }
 }
