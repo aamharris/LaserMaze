@@ -49,15 +49,24 @@ namespace LaserMaze
             var mirrorsText = mirrorText.Split("\r\n");
             foreach (var item in mirrorsText)
             {
-                var mirrorProps = Regex.Match(item, @"(\d+,\d+)(R|L)").Groups;
+                var mirrorProps = Regex.Match(item, @"(?<coords>\d+,\d+)(?<orientation>R|L)(?<oneway>R|L)?").Groups;
                 var mirror = new Mirror();
-                mirror.Coordinates = new GridCoordinates(mirrorProps[1].Value);
-                mirror.MirrorType = MirrorType.TwoWay;
-                mirror.MirrorOrientation = mirrorProps[2].Value == "R" ? MirrorOrientation.Right : MirrorOrientation.Left;
+                mirror.Coordinates = new GridCoordinates(mirrorProps["coords"].Value);
+                mirror.MirrorOrientation = mirrorProps["orientation"].Value == "R" ? MirrorOrientation.Right : MirrorOrientation.Left;
+                mirror.MirrorType = GetMirrorType(mirrorProps);
                 mirrors.Add(mirror);
             }
 
             return mirrors;          
+        }
+
+        private static MirrorType GetMirrorType(GroupCollection mirrorProps)
+        {
+            if (string.IsNullOrWhiteSpace(mirrorProps["oneway"]?.Value))
+            {
+                return MirrorType.TwoWay;
+            }
+            return mirrorProps["oneway"].Value == "R" ? MirrorType.OneWayReflectOnRight : MirrorType.OneWayReflectOnLeft;
         }
 
         private static GridCoordinates GetGridSize(string coordText)

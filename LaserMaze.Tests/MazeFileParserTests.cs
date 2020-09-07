@@ -46,7 +46,7 @@ namespace LaserMaze.Tests
         }
 
         [Fact]
-        public void GetLaserMazeConfiguration_GetsRightMirror_WithValidConfig()
+        public void GetLaserMazeConfiguration_GetsRightMirror_WhenConfigHasRightMirror()
         {
             var configuration = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2R" }));
             Assert.Single(configuration.Mirrors);
@@ -57,7 +57,7 @@ namespace LaserMaze.Tests
         }
 
         [Fact]
-        public void GetLaserMazeConfiguration_GetsLeftMirror_WithValidConfig()
+        public void GetLaserMazeConfiguration_GetsLeftMirror_WhenConfigHasLeftMirror()
         {
             var configuration = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2L" }));
             Assert.Single(configuration.Mirrors);
@@ -81,7 +81,27 @@ namespace LaserMaze.Tests
             Assert.Equal(MirrorOrientation.Left, mirror2.MirrorOrientation);
         }
 
+        [Fact]
+        public void GetLaserMazeConfiguration_GetsOneWayMirrors_WhenConfigHasOneWayRight()
+        {
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2RR" }));
+            Assert.Single(config.Mirrors);
+            var mirror = config.Mirrors.First();
+            Assert.Equal(new GridCoordinates(1, 2), mirror.Coordinates);
+            Assert.Equal(MirrorType.OneWayReflectOnRight, mirror.MirrorType);
+            Assert.Equal(MirrorOrientation.Right, mirror.MirrorOrientation);
+        }
 
+        [Fact]
+        public void GetLaserMazeConfiguration_GetsOneWayMirrors_WhenConfigHasOneWayLeft()
+        {
+            var config = MazeFileParser.GetLaserMazeConfiguration(buildMazeConfigFileContents("1,2", new string[] { "1,2RL" }));
+            Assert.Single(config.Mirrors);
+            var mirror = config.Mirrors.First();
+            Assert.Equal(new GridCoordinates(1, 2), mirror.Coordinates);
+            Assert.Equal(MirrorType.OneWayReflectOnLeft, mirror.MirrorType);
+            Assert.Equal(MirrorOrientation.Right, mirror.MirrorOrientation);
+        }
 
         private string buildMazeConfigFileContents(string coordinates, string[] mirrors)
         {
