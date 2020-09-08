@@ -7,16 +7,17 @@ namespace LaserMaze
 {
     public class LaserMazeRunner
     {
-        public List<Room> Rooms { get; set; }
+        public List<IRoom> Rooms { get; set; }
 
         private GridCoordinates _gridSize;
-
+        private List<Mirror> _mirrors;
         private LaserPoint _startingLaserPoint;
         private LaserPoint _previousLaserPoint;
         private bool hasExited;
 
         public LaserMazeRunner(LaserMazeConfiguration config)
         {
+            _mirrors = config.Mirrors;
             _startingLaserPoint = config.LaserStartingPoint;
             _gridSize = config.GridSize;
             Rooms = BuildRooms(_gridSize);
@@ -53,17 +54,30 @@ namespace LaserMaze
             }
         }
 
-
-
-
-        private List<Room> BuildRooms(GridCoordinates gridSize)
+        private List<IRoom> BuildRooms(GridCoordinates gridSize)
         {
-            var rooms = new List<Room>();
+            var rooms = new List<IRoom>();
             for (int y = 0; y <= gridSize.Y; y++)
             {
                 for (int x = 0; x <= gridSize.X; x++)
                 {
-                    rooms.Add(new Room { Coordinates = new GridCoordinates(x, y) });
+                    var currentCoordinates = new GridCoordinates(x, y);
+                    var mirror = _mirrors.Where(a => a.Coordinates.X == currentCoordinates.X && a.Coordinates.Y == currentCoordinates.Y).FirstOrDefault();
+                    if (mirror != null)
+                    {
+                        if (mirror.MirrorType == MirrorType.TwoWay)
+                        {
+                            rooms.Add(new TwoWayMirrorRoom(mirror));
+                        }
+                        else
+                        {
+                            rooms.Add(new OneWayMirrorRoom(mirror));
+                        }
+                    }                    
+                    else
+                    {
+                        rooms.Add(new Room { Coordinates = new GridCoordinates(x, y) });
+                    }                    
                 }
             }
             return rooms;

@@ -36,22 +36,24 @@ namespace LaserMaze.Tests
         }
 
         [Fact]
-        public void GetLaserExitPoint_ReturnsLastRoom_WhenTwoWayMirrorsExist()
+        public void GetLaserExitPoint_ReturnsLastRoom_WithOneWayAndTwoWayMirrors()
         {
-            var mirror = new Mirror { Coordinates = new GridCoordinates(0, 1), MirrorOrientation = MirrorOrientation.Right, MirrorType = MirrorType.TwoWay };
+            var twoway = new Mirror { Coordinates = new GridCoordinates(3, 2), MirrorOrientation = MirrorOrientation.Left, MirrorType = MirrorType.TwoWay };
+            var oneway = new Mirror { Coordinates = new GridCoordinates(1, 2), MirrorOrientation = MirrorOrientation.Right, MirrorType = MirrorType.OneWayReflectOnRight };
+
             var config = new LaserMazeConfiguration
             {
-                GridSize = new GridCoordinates(1, 1),
-                Mirrors = new List<Mirror> { mirror },
-                LaserStartingPoint = new LaserPoint { Coordinates = new GridCoordinates(0, 0), Direction = LaserDirection.Up }
+                GridSize = new GridCoordinates(5, 4),
+                Mirrors = new List<Mirror> { oneway, twoway },
+                LaserStartingPoint = new LaserPoint { Coordinates = new GridCoordinates(0, 2), Direction = LaserDirection.Right }
             };
 
             var mazeRunner = new LaserMazeRunner(config);
 
             var endingPoint = mazeRunner.GetLaserExitPoint();
 
-            Assert.Equal(LaserDirection.Right, endingPoint.Direction);
-            Assert.Equal(new GridCoordinates(1, 1), endingPoint.Coordinates);
+            Assert.Equal(LaserDirection.Down, endingPoint.Direction);
+            Assert.Equal(new GridCoordinates(3, 0), endingPoint.Coordinates);
         }
     }
 }

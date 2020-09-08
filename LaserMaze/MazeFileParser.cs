@@ -74,10 +74,10 @@ namespace LaserMaze
         {
             if (orientation == "H")
             {
-                return coords.Y == 0 ? LaserDirection.Right : LaserDirection.Left;
+                return coords.X == 0 ? LaserDirection.Right : LaserDirection.Left;
             }
             else
-                return coords.X == 0 ? LaserDirection.Up : LaserDirection.Down;
+                return coords.Y == 0 ? LaserDirection.Up : LaserDirection.Down;
         }
 
         private static MirrorType GetMirrorType(GroupCollection mirrorProps)
