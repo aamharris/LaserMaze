@@ -9,13 +9,14 @@ namespace LaserMaze
 {
  public static class MazeFileParser
     {
-        public static string GetFileContentsFromPath(string filePath)
+        public static string GetFileContents(string[] args)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
+            if (args.Length == 0)
             {
                 throw new Exception("No file provided- add file path to args to continue");
             }
 
+            string filePath = args[0];
             if (Path.GetExtension(filePath) != ".txt")
             {
                 throw new Exception("Maze config file must be a text file");

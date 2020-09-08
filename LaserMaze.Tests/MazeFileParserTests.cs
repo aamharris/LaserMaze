@@ -10,28 +10,28 @@ namespace LaserMaze.Tests
         [Fact]
         public void GetFileContents_ReturnsContents_WithValidTextFile()
         {
-            var contents = MazeFileParser.GetFileContentsFromPath(@"./Resources/mazeSettings.txt");
+            var contents = MazeFileParser.GetFileContents(new string[] { @"./Resources/mazeSettings.txt"});
             Assert.Equal("my\r\ntest\r\nfile", contents);
         }
 
         [Fact]
         public void GetFileContents_Throws_WhenFilePathEmpty()
         {
-            var exception = Assert.Throws<Exception>(() => MazeFileParser.GetFileContentsFromPath(""));
+            var exception = Assert.Throws<Exception>(() => MazeFileParser.GetFileContents(new string[] { }));
             Assert.Equal("No file provided- add file path to args to continue", exception.Message);
         }
 
         [Fact]
         public void GetFileContents_Throws_WhenFileNotFoundAtPath()
         {
-            var exception = Assert.Throws<Exception>(() => MazeFileParser.GetFileContentsFromPath("nothinghere.txt"));
+            var exception = Assert.Throws<Exception>(() => MazeFileParser.GetFileContents(new string[] { "nothinghere.txt" }));
             Assert.Equal("Error retrieving file.", exception.Message);
         }
 
         [Fact]
         public void GetFileContents_Throws_WhenFileIsNotTextFile()
         {
-            var exception = Assert.Throws<Exception>(() => MazeFileParser.GetFileContentsFromPath(@"./Resources/dummy.pdf"));
+            var exception = Assert.Throws<Exception>(() => MazeFileParser.GetFileContents(new string[] { @"./Resources/dummy.pdf" }));
             Assert.Equal("Maze config file must be a text file", exception.Message);
         }
 

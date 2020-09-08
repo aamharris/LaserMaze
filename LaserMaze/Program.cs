@@ -7,7 +7,7 @@ namespace LaserMaze
         static void Main(string[] args)
         {
             Console.WriteLine("Laser Maze");
-            var fileContents = MazeFileParser.GetFileContentsFromPath(args[0]);
+            var fileContents = MazeFileParser.GetFileContents(args);
             var config = MazeFileParser.GetLaserMazeConfiguration(fileContents);
 
             Console.WriteLine("Staring Configurations");
