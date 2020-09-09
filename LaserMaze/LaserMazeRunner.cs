@@ -63,23 +63,21 @@ namespace LaserMaze
                 {
                     var currentCoordinates = new GridCoordinates(x, y);
                     var mirror = _mirrors.Where(a => a.Coordinates.X == currentCoordinates.X && a.Coordinates.Y == currentCoordinates.Y).FirstOrDefault();
-                    if (mirror != null)
+                    
+                    if (mirror == null)
                     {
-                        if (mirror.MirrorType == MirrorType.TwoWay)
-                        {
-                            rooms.Add(new TwoWayMirrorRoom(mirror));
-                        }
-                        else
-                        {
-                            rooms.Add(new OneWayMirrorRoom(mirror));
-                        }
-                    }                    
+                        rooms.Add(new EmptyRoom { Coordinates = new GridCoordinates(x, y) });
+                    }
                     else
                     {
-                        rooms.Add(new Room { Coordinates = new GridCoordinates(x, y) });
-                    }                    
+                        if (mirror.MirrorOrientation == MirrorOrientation.Right)
+                            rooms.Add(new RightAngleMirrorRoom(mirror));
+                        else
+                            rooms.Add(new LeftAngleMirrorRoom(mirror));
+                    }
                 }
             }
+
             return rooms;
         }        
     }

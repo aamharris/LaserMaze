@@ -2,7 +2,7 @@
 
 namespace LaserMaze.Models
 {
-    public class Room : BaseRoom, IRoom
+    public class EmptyRoom : BaseRoom, IRoom
     {
         public LaserPoint GetNextLaserPosition(LaserDirection currentDirection)
         {
